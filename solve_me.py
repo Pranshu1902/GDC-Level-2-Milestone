@@ -66,13 +66,21 @@ $ python tasks.py report # Statistics"""
         )
 
     def add(self, args):
+        # priority not in list previously
         if args[0] not in self.current_items.keys():
             self.current_items[args[0]] = args[1]
         else:
-            previous = self.current_items.pop(args[0])
+            # finding the next available priority number
+            priority = int(args[0])
+            # reaching the ending
+            while str(priority) in self.current_items.keys():
+                priority += 1
+            # updating existings tasks
+            for i in range(priority, int(args[0]), -1):
+                prev = self.current_items.pop(str(i - 1))
+                self.current_items[str(i)] = prev
+            # adding new task
             self.current_items[args[0]] = args[1]
-            n = int(args[0]) + 1
-            self.current_items[n] = previous
         self.write_current()
         print(f'Added task: "{args[1]}" with priority {args[0]}')
 
@@ -97,7 +105,7 @@ $ python tasks.py report # Statistics"""
 
     def ls(self):
         i = 1
-        for key, val in self.current_items.items():
+        for key, val in sorted(self.current_items.items()):
             print(f"{i}. {val} [{key}]")
             i += 1
 
@@ -105,7 +113,7 @@ $ python tasks.py report # Statistics"""
         # Pending items
         print(f"Pending : {len(self.current_items)}")
         i = 1
-        for k, v in self.current_items.items():
+        for k, v in sorted(self.current_items.items()):
             print(f"{i}. {v} [{k}]")
             i += 1
 
